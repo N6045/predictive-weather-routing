@@ -7,7 +7,13 @@ const svgCaptcha = require('svg-captcha');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 require('dotenv').config();
+
+if (!process.env.JWT_SECRET) {
+    console.warn("WARNING: JWT_SECRET is not set in .env! Using a temporary random secret for this session.");
+    process.env.JWT_SECRET = crypto.randomBytes(32).toString('hex');
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -37,7 +43,7 @@ const authenticateToken = (req, res, next) => {
     const token = authHeader && authHeader.split(' ')[1];
     if (token == null) return res.status(401).json({ success: false, message: "No token provided" });
 
-    jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key', (err, user) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
         if (err) return res.status(403).json({ success: false, message: "Invalid or expired token" });
         req.user = user;
         next();
@@ -46,11 +52,18 @@ const authenticateToken = (req, res, next) => {
 
 function initUsersDB() {
     if (!fs.existsSync(USERS_FILE)) {
+        const initialPassword = process.env.DEFAULT_ADMIN_PASSWORD || crypto.randomBytes(8).toString('hex');
         const defaultAdmin = {
             username: 'admin',
-            passwordHash: bcrypt.hashSync('AdminPassword123!', 10)
+            passwordHash: bcrypt.hashSync(initialPassword, 10)
         };
         fs.writeFileSync(USERS_FILE, JSON.stringify([defaultAdmin], null, 2), 'utf8');
+        console.log(`\n======================================================`);
+        console.log(`🔒 SECURITY NOTICE: Created default admin account.`);
+        console.log(`Username: admin`);
+        console.log(`Password: ${initialPassword}`);
+        console.log(`(You can set DEFAULT_ADMIN_PASSWORD in your .env file)`);
+        console.log(`======================================================\n`);
     }
 }
 initUsersDB();
@@ -153,7 +166,7 @@ app.post('/api/login', (req, res) => {
     
     if (user && bcrypt.compareSync(password, user.passwordHash)) {
         // Generate JWT
-        const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET || 'fallback_secret_key', { expiresIn: '1h' });
+        const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.json({ success: true, message: "Login successful", token: token });
     } else {
         res.status(401).json({ success: false, message: "Invalid credentials" });

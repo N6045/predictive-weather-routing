@@ -1,0 +1,302 @@
+
+--- Slide 1 ---
+Predictive Weather Guidance
+ With Route Engine
+
+Nimish M Biju
+Riya Roy
+Nandhakrishna V S
+Pavithra R Raj
+Nihal Mohamed Shafi
+
+--- Slide 2 ---
+Introduction
+Navigation apps prioritize shortest distance or fastest time
+Weather (rain, fog, wind, storms) impacts safety, comfort, and reliability
+Users must switch between map and weather apps
+Integrating both enables smarter and safer travel planning
+
+
+
+
+Weather-Based Route Planning Web Application
+
+--- Slide 3 ---
+Problem Statement
+Route planners don’t treat weather as a key decision factor
+Users must manually assess weather impact on routes
+Weather varies along the route; origin-only data is insufficient
+Need a simple, beginner-friendly system combining routing, weather, and visualization
+
+Weather-Based Route Planning Web Application
+
+--- Slide 4 ---
+Aim of the Project
+Develop a web app that generates routes with weather conditions along the path
+Enable users to make informed decisions before starting their journey
+
+
+
+
+Weather-Based Route Planning Web Application
+
+--- Slide 5 ---
+Objectives
+Build an interactive map-based web interface
+Generate routes between source and destination
+Extract key points (start, midpoint, destination)
+Fetch weather data for these points via API
+Display route and weather together clearly
+
+Weather-Based Route Planning Web Application
+
+--- Slide 6 ---
+
+--- Slide 7 ---
+Smart Navigation System with Weather 
+Integration
+Authors: R. Kumar et al.
+ • Developed a web-based navigation system combining route generation and weather forecasting.
+ • Used API-based data fetching to display weather at source and destination.
+Limitation:
+ • Considers weather only at endpoints, ignoring variations along the route.
+
+Authors: J. Smith et al.
+ • Proposed a route planning system integrating navigation with real-time weather data.
+ • Utilized mapping APIs and weather APIs to visualize conditions along travel routes.
+Limitation:
+ • Limited to static checkpoints; does not dynamically adjust routes based on weather changes.
+
+
+--- Slide 8 ---
+Literature Review
+Weather Forecast Integration in Navigation
+ Systems
+Weather-Based Route Planning Web Application
+Authors: M. Lee et al.
+ • Proposed integrating weather forecast data into navigation interfaces for better decision-making.
+ • Highlighted importance of real-time data in improving travel safety.
+Limitation:
+ • Lacks detailed visualization of weather conditions along the entire route.
+
+
+--- Slide 9 ---
+Proposed System
+The user enters a start point , start time and destination in the web application.
+The system generates a route on an interactive map.
+The route geometry is sampled at key points such as origin, midpoint, and destination.
+The application requests weather data for these coordinates.
+Weather details are displayed beside the route together with simple warnings.
+The first version acts as a decision-support tool rather than a full automatic rerouting engine.
+Weather-Based Route Planning Web Application
+
+--- Slide 10 ---
+Dataset
+Primary data sources
+• OpenStreetMap – road network and base map
+https://www.openstreetmap.org/
+ • Nominatim – geocoding and reverse geocoding
+https://nominatim.org/
+ • OSRM – route computation over OSM road network
+https://project-osrm.org/
+ • OpenWeather – forecast data by coordinates
+https://openweathermap.org/forecast5
+ • Kerala/India support:
+https://wiki.openstreetmap.org/wiki/Kerala
+https://download.geofabrik.de/asia/india.html
+Weather-Based Route Planning Web Application
+
+--- Slide 11 ---
+Technology Stack
+Frontend and development
+HTML5, CSS3, and JavaScript.
+VS Code and Live Server for local development.
+Optional GitHub for version control.
+Core services and libraries
+Leaflet for interactive map display.
+Leaflet Routing Machine for routing interface.
+OSRM-compatible backend for route generation.
+OpenWeather API for current weather and forecasts.
+Weather-Based Route Planning Web Application
+
+--- Slide 12 ---
+
+
+
+
+
+
+
+System Architecture
+Weather-Based Route Planning Web Application
+
+--- Slide 13 ---
+
+Pseudocode- Road Mapping & Path Computation Algorithm
+Start the algorithm.
+Read the input start location text and destination location text.
+Convert both location texts into geographic coordinates using geocoding.
+Check if either the start or destination coordinates are null.
+If any coordinate is null, return "Invalid start or destination" and terminate the algorithm.
+Request the route from the OSRM service using the obtained coordinates.
+Check if the route response is empty.
+If the response is empty, return "Route not found" and terminate the algorithm.
+Extract the route path coordinates, total distance, and total travel time from the response.
+Compute the midpoint index as half of the length of the route path.
+Determine the midpoint coordinate using the midpoint index.
+Draw the route path on the map.
+Return the route path, total distance, total travel time, and midpoint coordinate.
+End the algorithm.
+
+
+Weather-Based Route Planning Web Application
+
+--- Slide 14 ---
+
+
+Start the algorithm.
+Read the start and destination coordinates.
+Initialize a list with all coordinates.
+For each coordinate, construct the API URL using latitude and longitude.
+Fetch forecast data from the OpenWeather API.
+If the response is empty, store "Forecast unavailable"; otherwise extract and store the forecast data.
+Assign forecast data to start, midpoint, and destination variables.
+Return all forecast data.
+End the algorithm.
+
+Pseudocode- Weather Forecast Extraction & API Integration Algorithm
+
+
+
+Weather-Based Route Planning Web Application
+
+--- Slide 15 ---
+
+Pseudocode- Route–Weather Synchronisation & Timeline Generation Algorithm
+Start the algorithm.
+Read departure time, total travel time, and forecast data (start, midpoint, destination).
+Compute arrival times:
+Start = departure time
+Midpoint = departure time + (total travel time / 2)
+Destination = departure time + total travel time
+For each location (start, midpoint, destination):
+ a. Initialize minimum time difference to infinity and closest forecast to null.
+ b. For each forecast entry, compute the absolute time difference from arrival time.
+ c. If the difference is smaller, update the closest forecast.
+ d. Store the closest forecast for that location.
+Return matched forecasts for start, midpoint, and destination.
+End the algorithm.
+Weather-Based Route Planning Web Application
+
+--- Slide 16 ---
+
+Pseudocode- Backend Orchestration & API Delivery Algorithm
+Start the algorithm.
+Read start location, destination location, and departure time.
+Geocode locations to obtain coordinates.
+If coordinates are invalid, return "Location not found" and terminate.
+Request route from OSRM; if unavailable, return "Route unavailable" and terminate.
+Extract route path, distance, and travel time; compute midpoint and its place name.
+Fetch weather forecast data for start, midpoint, and destination.
+Compute arrival times based on departure time and travel duration.
+Match closest forecast entries for each location.
+Analyze forecasts to generate weather warnings.
+Construct and return structured route-weather response.
+End the algorithm.
+Weather-Based Route Planning Web Application
+
+--- Slide 17 ---
+
+Pseudocode- Frontend Visualisation & UI Algorithm
+Start the algorithm.
+While the user types in the search box, fetch and display location suggestions after a short delay.
+When the user selects start and destination and initiates the request, send the inputs to the backend.
+Receive the route-weather response.
+If the response contains an error, display the error message and terminate.
+Clear previous UI elements.
+Render the route on the map and adjust the view.
+Display route summary details (locations, midpoint, distance, travel time).
+Display weather information for start, midpoint, and destination.
+If warnings exist, display them prominently.
+End the algorithm.
+Weather-Based Route Planning Web Application
+
+--- Slide 18 ---
+Backend Technologies & API Overview
+ 🔹Core Technologies
+Node.js – Server-side execution
+Express.js – REST API & request handling
+CORS Middleware – Enables frontend–backend communication
+File System (fs) – JSON-based storage (.database.json, .users.json)
+bcryptjs – Secure password hashing
+svg-captcha – CAPTCHA generation
+🔹 API Endpoints
+GET /api/history – Retrieve stored route data
+POST /api/history – Save route with timestamp
+DELETE /api/history – Clear records (admin only)
+GET /api/captcha – Generate CAPTCHA { id, svg }
+POST /api/login – Validate user + CAPTCHA
+POST /api/register – Register user (hashed password)
+
+--- Slide 19 ---
+CAPTCHA & Password Security
+
+
+🔹 CAPTCHA System
+Generated using svg-captcha (distorted SVG)
+Returns { id, svg }; stored in memory (expires in 5 min)
+Working:
+ Generate → Display → User Input → Verify → Delete (one-time use)
+Purpose:
+Prevent bots (OCR-resistant distortions)
+Ensure human verification
+🔹 Password Handling
+Frontend Validation:
+≥ 8 characters, uppercase, lowercase, number, special character
+Real-time strength check
+Backend Security:
+Hashed using bcryptjs (cost: 10)
+Stored securely (no plain text)
+Login Flow:
+ CAPTCHA → Password check (bcrypt.compareSync()) → Access control
+
+
+--- Slide 20 ---
+Workflow
+Weather-Based Route Planning Web Application
+
+--- Slide 21 ---
+Future scope
+
+Real-time Weather Updates: Integrate live weather APIs for continuous updates during travel.
+Dynamic Route Adjustment: Suggest alternate routes based on changing weather or traffic conditions.
+Traffic Data Integration: Combine weather insights with real-time traffic information for better planning.
+Multi-Stop Route Planning: Allow users to add multiple stops and analyze weather at each point.
+Mobile Application Development: Extend the system into a dedicated mobile app for accessibility.
+User Personalization: Provide customized alerts based on user preferences (e.g., avoid rain or fog).
+Voice Assistance Integration: Enable voice-based route planning and weather updates.
+Weather-Based Route Planning Web Application
+
+--- Slide 22 ---
+
+OpenStreetMap, OpenStreetMap Data : https://www.openstreetmap.org/
+OSRM, Routing API Documentation : http://project-osrm.org/
+OpenWeather, Weather API Documentation : https://openweathermap.org/api
+Nominatim, Geocoding API Documentation: https://nominatim.org/
+Leaflet, Interactive Maps Documentation : https://leafletjs.com/
+REST API, Architectural Style for Networked Applications.
+
+References
+
+--- Slide 23 ---
+
+Publications
+https://blog.afi.io/blog/google-maps-weather-along-route-weather-aware-planner/#:~:text=Google%20Maps%20weather%20along%20route,in%20the%20high%20mountain%20passes
+
+--- Slide 24 ---
+Conclusion
+The proposed system combines route planning and weather information in a single web interface.
+It addresses a practical user need and is suitable as a beginner mini project.
+The application is simple, scalable, and can be extended to real-time alerts, route risk scoring, and weather-based rerouting.
+The project also demonstrates integration of geospatial APIs, web technologies, and environmental data.
+Weather-Based Route Planning Web Application
